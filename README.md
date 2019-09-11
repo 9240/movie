@@ -1,4 +1,4 @@
-# move
+# movie
 
 ## Project setup
 ```
