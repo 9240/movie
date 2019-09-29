@@ -7,6 +7,10 @@ import axios from 'axios'
 Vue.config.productionTip = false
 Vue.prototype.axios = axios;
 
+import BScroller from '@/components/Scroller'
+import Loading from '@/components/Loading'
+Vue.component('BScroller',BScroller)
+Vue.component('Loading',Loading)
 Vue.filter('setWH',(url,arg)=>{
   return url.replace(/w\.h/,arg)
 })

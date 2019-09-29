@@ -1,24 +1,25 @@
 <template>
     <div class="cinema_body">
-        <ul>
-            <li v-for="(item,index) in cinemaList" :key="index">
-                <div>
-                    <span>{{item.nm}}</span>
-                    <span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
-                </div>
-                <div class="address">
-                    <span>{{item.addr}}</span>
-                    <span>{{item.distance}}</span>
-                </div>
-                <div class="card">
-                    <!-- <div>{{item.tag.snack}}</div>
-                    <div>{{item.tag.vipTag}}</div> -->
-                    <template v-for="(val,key) in item.tag">
-                        <div v-if="val===1" :key="key" :class="key|classCard">{{key|formatCard}}</div>
-                    </template>
-                </div>
-            </li>
-        </ul>
+        <Loading v-if="isLoading"/>
+        <BScroller v-else>
+            <ul>
+                <li v-for="(item,index) in cinemaList" :key="index">
+                    <div>
+                        <span>{{item.nm}}</span>
+                        <span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
+                    </div>
+                    <div class="address">
+                        <span>{{item.addr}}</span>
+                        <span>{{item.distance}}</span>
+                    </div>
+                    <div class="card">
+                        <template v-for="(val,key) in item.tag">
+                            <div v-if="val===1" :key="key" :class="key|classCard">{{key|formatCard}}</div>
+                        </template>
+                    </div>
+                </li>
+            </ul>
+        </BScroller>
     </div>
 </template>
 
@@ -27,12 +28,21 @@ export default {
     name: "CiList",
     data(){
         return{
-            cinemaList:[]
+            cinemaList:[],
+            isLoading:true,
+            preCityId:-1
         }
     },
-    mounted(){
-        this.axios.get("/api/cinemaList?cityId=10").then(res=>{
+    activated(){
+        var cityId = this.$store.state.city.id
+        if(this.preCityId === cityId){
+            return;
+        }
+        this.isLoading = true
+        this.axios.get("/api/cinemaList?cityId="+cityId).then(res=>{
             console.log(res)
+            this.preCityId = cityId
+            this.isLoading = false
             var msg = res.data.msg;
             if(msg == "ok"){
                 this.cinemaList = res.data.data.cinemas;
