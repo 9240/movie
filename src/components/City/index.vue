@@ -1,20 +1,25 @@
 <template>
     <div class="city_body">
         <div class="city_list">
-            <div class="city_hot">
-                <h2>热门城市</h2>
-                <ul class="clearfix">
-                    <li v-for="(item,index) in hotList" :key="index">{{item.nm}}</li>
-                </ul>
-            </div>
-            <div class="city_sort" ref="city_sort">
-                <div v-for="(items,index) in cityList" :key="index">
-                    <h2>{{items.index}}</h2>
-                    <ul v-for="(item,index) in items.list" :key="index">
-                        <li>{{item.nm}}</li>
-                    </ul>
+            <Loading v-if="isLoading"/>
+            <BScroller v-else ref="city_list">
+                <div>
+                    <div class="city_hot">
+                        <h2>热门城市</h2>
+                        <ul class="clearfix">
+                            <li @tap="handleToCity(item.nm,item.id)" v-for="(item,index) in hotList" :key="index">{{item.nm}}</li>
+                        </ul>
+                    </div>
+                    <div class="city_sort" ref="city_sort">
+                        <div v-for="(items,index) in cityList" :key="index">
+                            <h2>{{items.index}}</h2>
+                            <ul v-for="(item,index) in items.list" :key="index" @tap="handleToCity(item.nm,item.id)">
+                                <li>{{item.nm}}</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </BScroller>
         </div>
         <div class="city_index">
             <ul>
@@ -30,22 +35,36 @@ export default {
     data(){
         return{
             cityList:[],
-            hotList:[]
+            hotList:[],
+            isLoading:true
         }
     },
     mounted(){
-        this.axios.get("/api/cityList").then(res=>{
-            // console.log(res)
-            var msg = res.data.msg;
-            if(msg == "ok"){
-                var cities = res.data.data.cities;
-                // [{index:"A",list:[{}]}]
-                // console.log(cities)
-                var {cityList,hotList} = this.formatCityList(cities)
-                this.cityList = cityList;
-                this.hotList = hotList;
-            }
-        })
+        var cityList = localStorage.getItem('cityList');
+        var hotList = localStorage.getItem('hotList');
+        if(cityList&&hotList){
+            this.isLoading = false
+            this.cityList = JSON.parse(cityList);
+            this.hotList = JSON.parse(hotList);
+        }else{
+            this.axios.get("/api/cityList").then(res=>{
+                // console.log(res)
+                var msg = res.data.msg;
+                if(msg == "ok"){
+                    this.isLoading = false
+                    var cities = res.data.data.cities;
+                    // [{index:"A",list:[{}]}]
+                    // console.log(cities)
+                    var {cityList,hotList} = this.formatCityList(cities)
+                    this.cityList = cityList;
+                    this.hotList = hotList;
+                    localStorage.setItem('cityList',JSON.stringify(cityList))
+                    localStorage.setItem('hotList',JSON.stringify(hotList))
+
+                }
+            })
+        }
+        
     },
     methods:{
         formatCityList(cities){
@@ -92,7 +111,14 @@ export default {
         },
         handleToIndex(index){
             var h2 = this.$refs.city_sort.getElementsByTagName("h2");
-            this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
+            // this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
+            this.$refs.city_list.toScrollTop(-h2[index].offsetTop)
+        },
+        handleToCity(nm,id){
+            this.$store.commit('CITY_INFO',{nm,id})
+            localStorage.setItem('nowNm',nm)
+            localStorage.setItem('nowId',id)
+            this.$router.push('/movie/nowPlaying')
         }
     }
 }
