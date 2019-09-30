@@ -5,11 +5,11 @@
       <ul>
         <li class="pullDown">{{pullDownmsg}}</li>
         <li v-for="(item,index) in comingList" :key="index">
-          <div class="pic_show">
+          <div class="pic_show" @tap="handleToDetail(item.id)">
             <img :src="item.img|setWH('128.180')" />
           </div>
           <div class="info_list">
-            <h2>{{item.nm}}</h2>
+            <h2 @tap="handleToDetail(item.id)">{{item.nm}}</h2>
             <p>
               <span class="person">{{item.wish}}</span> 人想看
             </p>
@@ -68,7 +68,11 @@ export default {
           }
         });
       }
-    }
+    },
+    handleToDetail(id) {
+      console.log(id);
+      this.$router.push('/movie/detail/'+id)
+    },
   }
 };
 </script>

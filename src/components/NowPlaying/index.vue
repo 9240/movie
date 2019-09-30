@@ -6,10 +6,10 @@
         <li class="pullDown">{{pullDownmsg}}</li>
         <li v-for="(item,index) in movieList" :key="index">
           <div class="pic_show">
-            <img :src="item.img|setWH('128.180')" @tap="handleToDetail" />
+            <img :src="item.img|setWH('128.180')" @tap="handleToDetail(item.id)" />
           </div>
           <div class="info_list">
-            <h2>
+            <h2 @tap="handleToDetail(item.id)">
               {{item.nm}}
               <span>{{item.version}}</span>
             </h2>
@@ -54,8 +54,9 @@ export default {
     });
   },
   methods: {
-    handleToDetail() {
-      console.log(12);
+    handleToDetail(id) {
+      console.log(id);
+      this.$router.push('/movie/detail/'+id)
     },
     handleToScroll(pos) {
       if (pos.y > 30) {

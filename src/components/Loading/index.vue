@@ -28,8 +28,6 @@ export default {
 
 <style scoped>
 .loader {
-    background: #fff;
-    background: radial-gradient(#222, #fff);
     bottom: 0;
     left: 0;
     overflow: hidden;
