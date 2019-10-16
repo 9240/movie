@@ -1,24 +1,59 @@
 <template>
     <div class="login_body">
         <div>
-            <input class="login_text" type="text" placeHolder="账户名/手机号/Email" >
+            <input class="login_text" type="text" placeHolder="账户名/手机号/Email" v-model="username">
         </div>
         <div>
-            <input class="login_text" type="password" placeHolder="请输入您的密码" >
+            <input class="login_text" type="password" placeHolder="请输入您的密码" v-model="password">
         </div>
         <div class="login_btn">
-            <input type="submit" value="登录">
+            <input type="submit" value="登录" @touchstart="handleToLogin">
         </div>
         <div class="login_link">
-            <a href="#">立即注册</a>
-            <a href="#">找回密码</a>
+            <router-link to="/mine/register">立即注册</router-link>
+            <router-link to="/mine/findPassword">找回密码</router-link>
         </div>
     </div>
 </template>
 
 <script>
+import { messageBox } from '@/components/js'
 export default {
-    name: "Login"
+    name: "Login",
+    data(){
+        return{
+            username:"",
+            password:""
+        }
+    },
+    methods:{
+        handleToLogin(){
+            this.axios.post('/api2/users/login',{
+                username:this.username,
+                password:this.password
+            }).then(res=>{
+                console.log(res)
+                var _this = this
+                var status = res.data.status;
+                if(status === 0){
+                    messageBox({
+                        title:"登录",
+                        content:"登录成功",
+                        ok:"确定",
+                        handleOk(){
+                            _this.$router.push('/mine/center')
+                        }
+                    })
+                }else{
+                    messageBox({
+                        title:"登录",
+                        content:"登录失败",
+                        ok:"确定"
+                    })
+                }
+            })
+        }
+    }
 }
 </script>
 

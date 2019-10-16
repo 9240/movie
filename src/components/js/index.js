@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import MessageBox from './MessageBox'
 export var messageBox = (function () {
-    var defaults = {//默认值
-        title:'',
-        content:'',
-        cancel:'',
-        ok:'',
-        handleCancel:null,
-        handleOk:null
-    }
     return function (opts) {
+        var defaults = {//默认值
+            title:'',
+            content:'',
+            cancel:'',
+            ok:'',
+            handleCancel:null,
+            handleOk:null
+        }
         for(var attr in opts){
             defaults[attr] = opts[attr]
         }
